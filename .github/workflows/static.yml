@@ -60,11 +60,11 @@ jobs:
 
       - name: Install Yarn dependencies
         run: yarn install
-        working_directory: helm/helm-frontend
+        working-directory: helm/helm-frontend
 
       - name: Run Vite build
         run: yarn build
-        working_directory: helm/helm-frontend
+        working-directory: helm/helm-frontend
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
