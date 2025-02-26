@@ -58,8 +58,11 @@ jobs:
         run: cp src/vite.config.ts helm/helm-frontend/vite.config.ts
 
       - name: Run Vite build
-        run: yarn build
+        run: yarn build --outDir '../../dist'
         working-directory: helm/helm-frontend
+
+      - name: Build projects
+        run: python3 src/build_projects.py
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
@@ -68,7 +71,7 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           # Upload build directory
-          path: helm/helm-frontend/dist
+          path: dist
 
       - name: Deploy to GitHub Pages
         id: deployment
