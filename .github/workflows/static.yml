@@ -47,6 +47,25 @@ jobs:
           path: helm-backend
           sparse-checkout: src/helm/benchmark/static_build
 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Enable corepack
+        run: corepack enable
+
+      - name: Install Yarn dependencies
+        run: yarn install
+        working_directory: helm/helm-frontend
+
+      - name: Run Vite build
+        run: yarn build
+        working_directory: helm/helm-frontend
+
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
@@ -55,6 +74,7 @@ jobs:
         with:
           # Upload build directory
           path: helm-backend/src/helm/benchmark/static_build
+
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
