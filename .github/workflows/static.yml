@@ -54,6 +54,9 @@ jobs:
         run: yarn install
         working-directory: helm/helm-frontend
 
+      - name: Configure Vite build
+        run: cp src/vite.config.ts helm/helm-frontend/vite.config.ts
+
       - name: Run Vite build
         run: yarn build
         working-directory: helm/helm-frontend
