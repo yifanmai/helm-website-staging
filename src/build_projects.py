@@ -25,7 +25,9 @@ def main():
         project_id = project["id"]
         project_path = os.path.join(DIST_PATH, project_id)
         os.mkdir(project_path)
-        for release in project["releases"]:
+        latest_release = project["releases"][0]
+        for release_or_latest in ["latest"] + project["releases"]:
+            release = latest_release if release_or_latest == "latest" else release
             release_path = os.path.join(project_path, release)
             os.mkdir(release_path)
             release_index_path = os.path.join(release_path, INDEX_FILE_NAME)
