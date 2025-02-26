@@ -28,7 +28,7 @@ def main():
         latest_release = project["releases"][0]
         for release_or_latest in ["latest"] + project["releases"]:
             release = latest_release if release_or_latest == "latest" else release
-            release_path = os.path.join(project_path, release)
+            release_path = os.path.join(project_path, release_or_latest)
             os.mkdir(release_path)
             release_index_path = os.path.join(release_path, INDEX_FILE_NAME)
             shutil.copyfile(source_index_path, release_index_path)
