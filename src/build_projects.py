@@ -14,6 +14,16 @@ window.PROJECT_ID = "{project_id}";
 GCS_URL_TEMPLATE = (
     "https://storage.googleapis.com/crfm-helm-public/{project_id}/benchmark_output/"
 )
+REDIRECT_TEMPLATE = """
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Holistic Evaluation of Language Models (HELM)</title>
+<meta charset="utf-8">
+<meta http-equiv="refresh" content="0; URL=https://crfm.stanford.edu/helm/{project_id}/latest">
+</head>
+</html>
+"""
 
 
 def main():
@@ -26,8 +36,12 @@ def main():
         project_path = os.path.join(DIST_PATH, project_id)
         os.mkdir(project_path)
         latest_release = project["releases"][0]
+        redirect_file_path = os.path.join(project_path, INDEX_FILE_NAME)
+        with open(redirect_file_path, "w") as f:
+            redirect_file_contents = REDIRECT_TEMPLATE.format(project_id=project_id)
+            f.write(redirect_file_contents)
         for release_or_latest in ["latest"] + project["releases"]:
-            release = latest_release if release_or_latest == "latest" else release
+            release = latest_release if release_or_latest == "latest" else release_or_latest
             release_path = os.path.join(project_path, release_or_latest)
             os.mkdir(release_path)
             release_index_path = os.path.join(release_path, INDEX_FILE_NAME)
