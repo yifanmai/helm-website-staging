@@ -34,7 +34,7 @@ def main():
     for project in projects:
         project_id = project["id"]
         project_path = os.path.join(DIST_PATH, project_id)
-        os.mkdir(project_path)
+        os.makedirs(project_path, exist_ok=True)
         latest_release = project["releases"][0]
         redirect_file_path = os.path.join(project_path, INDEX_FILE_NAME)
         with open(redirect_file_path, "w") as f:
@@ -43,7 +43,7 @@ def main():
         for release_or_latest in ["latest"] + project.get("preview_releases", []) + project["releases"]:
             release = latest_release if release_or_latest == "latest" else release_or_latest
             release_path = os.path.join(project_path, release_or_latest)
-            os.mkdir(release_path)
+            os.makedirs(release_path, exist_ok=True)
             release_index_path = os.path.join(release_path, INDEX_FILE_NAME)
             shutil.copyfile(source_index_path, release_index_path)
             config_path = os.path.join(release_path, CONFIG_FILE_NAME)

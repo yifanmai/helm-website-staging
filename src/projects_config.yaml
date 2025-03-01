@@ -3,7 +3,6 @@
     Lightweight, broad evaluation of the capabilities of language models using
     in-context learning
   id: lite
-  preview_releases:
   releases:
     - v1.13.0
     - v1.12.0
