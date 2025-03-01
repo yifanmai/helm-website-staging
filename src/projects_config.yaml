@@ -42,6 +42,7 @@
 - title: Instruct
   description: Evaluations of instruction following models with absolute ratings
   id: instruct
+  benchmark_output_storage: nlp
   releases:
     - v1.0.0
 
@@ -140,4 +141,39 @@
   description: Home page for all HELM leaderboards
   id: home
   releases:
+    - v1.0.0
+
+# Pre-releases
+
+- title: SEA-HELM
+  description: SEA-HELM
+  id: sea-helm
+  benchmark_output_storage: nlp
+  preview_releases:
+    - v1.0.0
+
+- title: SQL
+  description: SQL
+  id: sql
+  benchmark_output_storage: nlp
+  preview_releases:
+    - v1.0.0
+
+- title: Long Context
+  description: Long context
+  id: long-context
+  benchmark_output_storage: nlp
+  preview_releases:
+    - v1.0.0
+
+- title: Finance
+  description: Finance
+  id: finance
+  preview_releases:
+    - v1.0.0
+
+- title: Call Center
+  description: Call Center
+  id: call-center
+  preview_releases:
     - v1.0.0
