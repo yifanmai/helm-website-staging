@@ -19,6 +19,7 @@
     - v1.1.0
     - v1.0.0
 
+# broken
 - title: Classic
   description: >-
     Thorough language model evaluations based on the scenarios from the original
@@ -39,6 +40,7 @@
     - v1.1.0
     - v1.0.0
 
+# broken
 - title: Instruct
   description: Evaluations of instruction following models with absolute ratings
   id: instruct
@@ -77,6 +79,7 @@
     - v2.0.0
     - v1.0.0
 
+# broken
 - title: Image2Struct
   description: >-
     Evaluations of Vision-Language Models on extracting structured information

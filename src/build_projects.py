@@ -36,6 +36,8 @@ def main():
 
     for project in projects:
         project_id = project["id"]
+        if project_id == "home":
+            continue
         project_path = os.path.join(DIST_PATH, project_id)
         os.makedirs(project_path, exist_ok=True)
         latest_release = project["releases"][0] if project.get("releases") else project["preview_releases"][0]
@@ -59,6 +61,17 @@ def main():
             )
             with open(config_path, "w") as f:
                 f.write(config_contents)
+
+    source_config_path = os.path.join(DIST_PATH, CONFIG_FILE_NAME)
+    source_config_contents = CONFIG_TEMPLATE.format(
+        release_constant_name="RELEASE",
+        release="v1.0.0",
+        project_id="home",
+        benchmark_output_base_url=GCS_URL_TEMPLATE.format(project_id="home"),
+    )
+    with open(source_config_path, "w") as f:
+        f.write(source_config_contents)
+
 
 
 if __name__ == "__main__":
