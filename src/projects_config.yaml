@@ -157,14 +157,14 @@
   id: sql
   benchmark_output_storage: nlp
   preview_releases:
-    - v1.0.0
+    - v0.5.0
 
 - title: Long Context
   description: Long context
   id: long-context
   benchmark_output_storage: nlp
   preview_releases:
-    - v1.0.0
+    - v0.1.0
 
 - title: Finance
   description: Finance
