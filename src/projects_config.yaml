@@ -3,6 +3,7 @@
     Lightweight, broad evaluation of the capabilities of language models using
     in-context learning
   id: lite
+  preview_releases:
   releases:
     - v1.13.0
     - v1.12.0
@@ -34,6 +35,7 @@
 - title: HEIM
   description: Holistic evaluation of text-to-image models
   id: heim
+  suites_only: true
   releases:
     - v1.1.0
     - v1.0.0
@@ -68,6 +70,7 @@
 - title: VHELM
   description: Holistic Evaluation of Vision-Language Models
   id: vhelm
+  suites_only: true
   releases:
     - v2.1.0
     - v2.0.1
@@ -79,6 +82,7 @@
     Evaluations of Vision-Language Models on extracting structured information
     from images
   id: image2struct
+  suites_only: true
   releases:
     - v1.0.2
     - v1.0.1
@@ -89,6 +93,8 @@
     Safety benchmark based on emerging government regulations and company
     policies
   id: air-bench
+  preview_releases:
+    - v1.6.0
   releases:
     - v1.5.0
     - v1.4.0
@@ -102,6 +108,8 @@
     Safety benchmark that aggregates popular safety benchmarks across 6 risk
     vectors
   id: safety
+  preview_releases:
+    - v1.2.0
   releases:
     - v1.1.0
     - v1.0.0
