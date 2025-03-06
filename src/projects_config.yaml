@@ -28,6 +28,7 @@
   benchmark_output_storage: classic
   releases:
     - v0.4.0
+  legacy_releases:
     - v0.3.0
     - v0.2.4
     - v0.2.3
