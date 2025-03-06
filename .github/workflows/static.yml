@@ -32,12 +32,20 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Checkout HELM
+      - name: Checkout HELM frontend
         uses: actions/checkout@v4
         with:
           repository: stanford-crfm/helm
           path: helm
           sparse-checkout: helm-frontend
+
+      - name: Checkout HELM Classic frontend
+        uses: actions/checkout@v4
+        with:
+          repository: stanford-crfm/helm
+          ref: v0.5.2
+          path: helm-classic
+          sparse-checkout: src/helm/benchmark/static
 
       - uses: actions/setup-node@v4
         with:
