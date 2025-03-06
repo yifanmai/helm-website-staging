@@ -25,6 +25,7 @@
     Thorough language model evaluations based on the scenarios from the original
     HELM paper
   id: classic
+  benchmark_output_storage: classic
   releases:
     - v0.4.0
     - v0.3.0

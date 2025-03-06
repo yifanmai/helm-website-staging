@@ -29,6 +29,17 @@ REDIRECT_TEMPLATE = """
 </html>
 """
 
+def _get_benchmark_output_base_url(storage_type: str, project_id: str) -> str:
+    
+    if storage_type == "nlp":
+        return NLP_URL_TEMPLATE.format(project_id=project_id)
+    elif storage_type == "gcs":
+        return GCS_URL_TEMPLATE.format(project_id=project_id)
+    elif storage_type == "classic":
+        return GCS_URL_TEMPLATE.format(project_id="classic").replace("classic/", "")
+    else:
+        raise ValueError(f"Unknown storage {storage_type}")
+
 
 def main():
     with open("src/projects_config.yaml") as f:
@@ -66,7 +77,7 @@ def main():
 
             # Write the config.js file
             config_path = os.path.join(release_path, CONFIG_FILE_NAME)
-            benchmark_output_base_url = NLP_URL_TEMPLATE.format(project_id=project_id) if project.get("benchmark_output_storage") == "nlp" else GCS_URL_TEMPLATE.format(project_id=project_id)
+            benchmark_output_base_url = _get_benchmark_output_base_url(project.get("benchmark_output_storage", "gcs"), project_id)
             config_contents = CONFIG_TEMPLATE.format(
                 release_constant_name="SUITE" if project.get("suites_only") else "RELEASE",
                 release=release,
