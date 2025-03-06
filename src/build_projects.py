@@ -36,7 +36,7 @@ def _get_benchmark_output_base_url(storage_type: str, project_id: str) -> str:
     elif storage_type == "gcs":
         return GCS_URL_TEMPLATE.format(project_id=project_id)
     elif storage_type == "classic":
-        return GCS_URL_TEMPLATE.format(project_id="classic").replace("classic/", "")
+        return GCS_URL_TEMPLATE.format(project_id="classic").replace("classic/", "").strip("/")
     else:
         raise ValueError(f"Unknown storage {storage_type}")
 
