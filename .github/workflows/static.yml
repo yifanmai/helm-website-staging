@@ -45,7 +45,9 @@ jobs:
           repository: stanford-crfm/helm
           ref: v0.5.2
           path: helm-classic
-          sparse-checkout: src/helm/benchmark/static
+          sparse-checkout: |
+            src/helm/benchmark/static
+            src/helm/proxy/static
 
       - uses: actions/setup-node@v4
         with:
