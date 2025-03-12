@@ -85,7 +85,6 @@ def build_project(
         redirect_file_contents = REDIRECT_TEMPLATE.format(project_id=project_id)
         f.write(redirect_file_contents)
     for release in ["latest"] + buildable_releases:
-        release = latest_release if release == "latest" else release
         release_path = os.path.join(project_path, release)
         os.makedirs(release_path, exist_ok=True)
 
