@@ -4,7 +4,7 @@ from typing import Dict, List
 import yaml
 
 
-CLASSIC_PATH = "helm-classic/src/helm/benchmark/static"
+# CLASSIC_PATH = "helm-classic/src/helm/benchmark/static"
 DIST_PATH = "dist/"
 LEGACY_PATH = "legacy/"
 INDEX_FILE_NAME = "index.html"
@@ -14,9 +14,7 @@ window.{release_constant_name} = "{release}";
 window.BENCHMARK_OUTPUT_BASE_URL = "{benchmark_output_base_url}";
 window.PROJECT_ID = "{project_id}";
 """
-NLP_URL_TEMPLATE = (
-    "https://nlp.stanford.edu/helm/{project_id}/benchmark_output/"
-)
+NLP_URL_TEMPLATE = "https://nlp.stanford.edu/helm/{project_id}/benchmark_output/"
 GCS_URL_TEMPLATE = (
     "https://storage.googleapis.com/crfm-helm-public/{project_id}/benchmark_output/"
 )
@@ -31,38 +29,83 @@ REDIRECT_TEMPLATE = """
 </html>
 """
 
-def _get_benchmark_output_base_url(storage_type: str, project_id: str) -> str:
+
+def get_benchmark_output_base_url(storage_type: str, project_id: str) -> str:
     if storage_type == "nlp":
         return NLP_URL_TEMPLATE.format(project_id=project_id)
     elif storage_type == "gcs":
         return GCS_URL_TEMPLATE.format(project_id=project_id)
     elif storage_type == "classic":
-        return GCS_URL_TEMPLATE.format(project_id="classic").replace("classic/", "").strip("/")
+        return (
+            GCS_URL_TEMPLATE.format(project_id="classic")
+            .replace("classic/", "")
+            .strip("/")
+        )
     else:
         raise ValueError(f"Unknown storage {storage_type}")
 
-def _get_all_visible_releases(project: Dict) -> List[str]:
-    return project.get("releases", []) + project.get("legacy_releases", []) 
 
-def _get_all_buildable_releases(project: Dict) -> List[str]:
+def get_all_visible_releases(project: Dict) -> List[str]:
+    return project.get("releases", []) + project.get("legacy_releases", [])
+
+
+def get_all_buildable_releases(project: Dict) -> List[str]:
     return project.get("releases", []) + project.get("preview_releases", [])
 
-def _get_all_releases(project: Dict) -> List[str]:
-    return project.get("releases", []) + project.get("preview_releases", []) + project.get("legacy_releases", []) 
 
-def _get_latest_release(project: Dict) -> str:
-    all_releases = _get_all_releases(project)
+def get_all_releases(project: Dict) -> List[str]:
+    return (
+        project.get("releases", [])
+        + project.get("preview_releases", [])
+        + project.get("legacy_releases", [])
+    )
+
+
+def get_latest_release(project: Dict) -> str:
+    all_releases = get_all_releases(project)
     if not all_releases:
-        raise ValueError(f"No releases for project {project["id"]}")
+        raise ValueError(f"No releases for project {project['id']}")
     return all_releases[0]
+
+
+def build_project(
+    vite_build_path: str,
+    project_id: str,
+    project_path: str,
+    benchmark_output_base_url: str,
+    latest_release: str,
+    buildable_releases: List[str],
+    suites_only: bool,
+):
+    os.makedirs(project_path, exist_ok=True)
+    redirect_file_path = os.path.join(project_path, INDEX_FILE_NAME)
+    with open(redirect_file_path, "w") as f:
+        redirect_file_contents = REDIRECT_TEMPLATE.format(project_id=project_id)
+        f.write(redirect_file_contents)
+    for release in ["latest"] + buildable_releases:
+        release = latest_release if release == "latest" else release
+        release_path = os.path.join(project_path, release)
+        os.makedirs(release_path, exist_ok=True)
+
+        source_index_path = os.path.join(vite_build_path, INDEX_FILE_NAME)
+        release_index_path = os.path.join(release_path, INDEX_FILE_NAME)
+        shutil.copyfile(source_index_path, release_index_path)
+
+        # Write the config.js file
+        config_path = os.path.join(release_path, CONFIG_FILE_NAME)
+        config_contents = CONFIG_TEMPLATE.format(
+            release_constant_name="SUITE" if suites_only else "RELEASE",
+            release=latest_release if release == "latest" else release,
+            project_id=project_id,
+            benchmark_output_base_url=benchmark_output_base_url,
+        )
+        with open(config_path, "w") as f:
+            f.write(config_contents)
+
 
 def main():
     with open("src/projects_config.yaml") as f:
         projects = yaml.safe_load(f)
-    source_index_path = os.path.join(DIST_PATH, INDEX_FILE_NAME)
-
-    # Include legacy files
-    shutil.copytree(LEGACY_PATH, DIST_PATH, dirs_exist_ok=True)
 
     # For each route /helm/:project/:release/ (e.g. /helm/lite/v1.0.0/)
     # copy two files, index.html and config.js, to that route so that the single-page app
@@ -73,32 +116,24 @@ def main():
         project_id = project["id"]
         if project_id == "home":
             continue
+        benchmark_output_base_url = get_benchmark_output_base_url(
+            project.get("benchmark_output_storage", "gcs"), project_id
+        )
         project_path = os.path.join(DIST_PATH, project_id)
-        os.makedirs(project_path, exist_ok=True)
-        latest_release = _get_latest_release(project)
-        redirect_file_path = os.path.join(project_path, INDEX_FILE_NAME)
-        with open(redirect_file_path, "w") as f:
-            redirect_file_contents = REDIRECT_TEMPLATE.format(project_id=project_id)
-            f.write(redirect_file_contents)
-        for release_or_latest in ["latest"] + _get_all_buildable_releases(project):
-            release = latest_release if release_or_latest == "latest" else release_or_latest
-            release_path = os.path.join(project_path, release_or_latest)
-            os.makedirs(release_path, exist_ok=True)
+        latest_release = get_latest_release(project)
+        buildable_releases = get_all_buildable_releases(project)
+        build_project(
+            vite_biuld_path=DIST_PATH,
+            project_id=project_id,
+            project_path=project_path,
+            benchmark_output_base_url=benchmark_output_base_url,
+            latest_release=latest_release,
+            buildable_releases=buildable_releases,
+            suites_only=project.get("suites_only", False),
+        )
 
-            release_index_path = os.path.join(release_path, INDEX_FILE_NAME)
-            shutil.copyfile(source_index_path, release_index_path)
-
-            # Write the config.js file
-            config_path = os.path.join(release_path, CONFIG_FILE_NAME)
-            benchmark_output_base_url = _get_benchmark_output_base_url(project.get("benchmark_output_storage", "gcs"), project_id)
-            config_contents = CONFIG_TEMPLATE.format(
-                release_constant_name="SUITE" if project.get("suites_only") else "RELEASE",
-                release=release,
-                project_id=project_id,
-                benchmark_output_base_url=benchmark_output_base_url,
-            )
-            with open(config_path, "w") as f:
-                f.write(config_contents)
+    # Include legacy files
+    shutil.copytree(LEGACY_PATH, DIST_PATH, dirs_exist_ok=True)
 
     # Write the config.js file at the root
     source_config_path = os.path.join(DIST_PATH, CONFIG_FILE_NAME)
@@ -110,8 +145,6 @@ def main():
     )
     with open(source_config_path, "w") as f:
         f.write(source_config_contents)
-
-
 
 
 if __name__ == "__main__":
