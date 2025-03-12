@@ -19,7 +19,6 @@
     - v1.1.0
     - v1.0.0
 
-# broken
 - title: Classic
   description: >-
     Thorough language model evaluations based on the scenarios from the original
@@ -75,6 +74,9 @@
   description: Holistic Evaluation of Vision-Language Models
   id: vhelm
   suites_only: true
+  preview_releases:
+    - v2.1.2
+    - v2.1.1
   releases:
     - v2.1.0
     - v2.0.1
@@ -98,9 +100,8 @@
     Safety benchmark based on emerging government regulations and company
     policies
   id: air-bench
-  preview_releases:
-    - v1.6.0
   releases:
+    - v1.6.0
     - v1.5.0
     - v1.4.0
     - v1.3.0
@@ -113,9 +114,8 @@
     Safety benchmark that aggregates popular safety benchmarks across 6 risk
     vectors
   id: safety
-  preview_releases:
-    - v1.2.0
   releases:
+    - v1.2.0
     - v1.1.0
     - v1.0.0
 
@@ -136,48 +136,39 @@
     - v1.1.0
     - v1.0.0
 
+- title: SEA-HELM
+  description: Assessment of large language models across various tasks, emphasizing Southeast Asian languages
+  id: seahelm
+  benchmark_output_storage: nlp
+  releases:
+    - v1.0.0
+
 - title: MMLU-Winogrande-Afr
   description: Clinical MMLU and Winogrande in 11 low-resource African languages
   id: mmlu-winogrande-afr
   releases:
     - v1.0.0
 
-- title: All Leaderboards
-  description: Home page for all HELM leaderboards
-  id: home
+- title: ToRR
+  description: A benchmark for table reasoning and robustness
+  id: torr
   releases:
     - v1.0.0
 
-
 - title: MedHELM
-  description: Ewok
-  id: ewok
-  preview_releases:
+  description: A benchmark by medical experts for LLMs grounded in real-world healthcare needs
+  id: medhelm
+  releases:
     - v1.0.0
-
-- title: ToRR
-  description: Ewok
-  id: ewok
-  preview_releases:
-    - v1.0.0
-
-
 
 # Pre-releases
-
-- title: SEA-HELM
-  description: SEA-HELM
-  id: sea-helm
-  benchmark_output_storage: nlp
-  preview_releases:
-    - v1.0.0
 
 - title: SQL
   description: SQL
   id: sql
   benchmark_output_storage: nlp
   preview_releases:
-    - v0.5.0
+    - v0.1.0
 
 - title: Long Context
   description: Long context
@@ -189,18 +180,21 @@
 - title: Finance
   description: Finance
   id: finance
+  benchmark_output_storage: nlp
   preview_releases:
     - v1.0.0
 
 - title: Call Center
   description: Call Center
   id: call-center
+  benchmark_output_storage: nlp
   preview_releases:
     - v1.0.0
 
 - title: Capabilities
   description: Capabilities
   id: capabilities
+  benchmark_output_storage: nlp
   preview_releases:
     - v1.0.0
 

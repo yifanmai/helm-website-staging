@@ -1,6 +1,7 @@
 import shutil
+import json
 import os
-from typing import Dict, List
+from typing import Dict, List, Mapping
 import yaml
 
 
@@ -9,6 +10,7 @@ DIST_PATH = "dist/"
 LEGACY_PATH = "legacy/"
 INDEX_FILE_NAME = "index.html"
 CONFIG_FILE_NAME = "config.js"
+PROJECT_METADATA_FILE_NAME = "project_metadata.json"
 CONFIG_TEMPLATE = """
 window.{release_constant_name} = "{release}";
 window.BENCHMARK_OUTPUT_BASE_URL = "{benchmark_output_base_url}";
@@ -45,11 +47,11 @@ def get_benchmark_output_base_url(storage_type: str, project_id: str) -> str:
         raise ValueError(f"Unknown storage {storage_type}")
 
 
-def get_all_visible_releases(project: Dict) -> List[str]:
+def get_visible_releases(project: Dict) -> List[str]:
     return project.get("releases", []) + project.get("legacy_releases", [])
 
 
-def get_all_buildable_releases(project: Dict) -> List[str]:
+def get_buildable_releases(project: Dict) -> List[str]:
     return project.get("releases", []) + project.get("preview_releases", [])
 
 
@@ -103,6 +105,28 @@ def build_project(
             f.write(config_contents)
 
 
+def build_project_metadata(projects: Mapping) -> None:
+    project_metadata = []
+    for project in projects:
+        releases = get_visible_releases(project)
+        if not releases:
+            continue
+        project_metadata.append({
+            "title": project["title"],
+            "description": project["description"],
+            "id": project["id"],
+            "releases": releases,
+        })
+    # Add special "home" project
+    project_metadata.append({
+        "title": "All Leaderboards",
+        "description": "Home page for all HELM leaderboards",
+        "id": "home",
+        "releases": ["v1.0.0"],
+    })
+    return project_metadata
+
+
 def main():
     with open("src/projects_config.yaml") as f:
         projects = yaml.safe_load(f)
@@ -114,14 +138,12 @@ def main():
     # Also do this for the "latest" alias route /helm/:project/latest/
     for project in projects:
         project_id = project["id"]
-        if project_id == "home":
-            continue
         benchmark_output_base_url = get_benchmark_output_base_url(
             project.get("benchmark_output_storage", "gcs"), project_id
         )
         project_path = os.path.join(DIST_PATH, project_id)
         latest_release = get_latest_release(project)
-        buildable_releases = get_all_buildable_releases(project)
+        buildable_releases = get_buildable_releases(project)
         build_project(
             vite_build_path=DIST_PATH,
             project_id=project_id,
@@ -145,6 +167,11 @@ def main():
     )
     with open(source_config_path, "w") as f:
         f.write(source_config_contents)
+
+    # Write the project_metadata.json file at the root
+    project_metadata_path = os.path.join(DIST_PATH, PROJECT_METADATA_FILE_NAME)
+    with open(project_metadata_path, "w") as f:
+        json.dump(build_project_metadata(projects), f, indent="\t")
 
 
 if __name__ == "__main__":

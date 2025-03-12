@@ -53,7 +53,7 @@ jobs:
         working-directory: helm/helm-frontend
 
       - name: Run Vite build
-        run: yarn build --outDir '../../dist'
+        run: yarn build --outDir '../../vite'
         working-directory: helm/helm-frontend
         env:
           VITE_BASE: /helm-website-staging/
