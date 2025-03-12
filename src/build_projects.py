@@ -6,8 +6,6 @@ import shutil
 import yaml
 
 
-# CLASSIC_PATH = "helm-classic/src/helm/benchmark/static"
-LEGACY_PATH = "legacy/"
 INDEX_FILE_NAME = "index.html"
 CONFIG_FILE_NAME = "config.js"
 PROJECT_METADATA_FILE_NAME = "project_metadata.json"
@@ -156,9 +154,6 @@ def build(output_path: str, static_build_path: str):
             buildable_releases=buildable_releases,
             suites_only=project.get("suites_only", False),
         )
-
-    # Include legacy files
-    shutil.copytree(LEGACY_PATH, output_path, dirs_exist_ok=True)
 
     # Write the config.js file at the root
     source_config_path = os.path.join(output_path, CONFIG_FILE_NAME)
