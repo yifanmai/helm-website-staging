@@ -45,7 +45,6 @@
 - title: Instruct
   description: Evaluations of instruction following models with absolute ratings
   id: instruct
-  benchmark_output_storage: nlp
   releases:
     - v1.0.0
 
