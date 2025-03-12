@@ -56,7 +56,7 @@ jobs:
         run: yarn build --outDir '../../dist'
         working-directory: helm/helm-frontend
         env:
-          VITE_BASE: /helm-website-staging/
+          VITE_HELM_FRONTEND_BASE: /helm-website-staging/
 
       - uses: actions/setup-python@v5
         with:
