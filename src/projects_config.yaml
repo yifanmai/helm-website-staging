@@ -158,6 +158,7 @@
 - title: MedHELM
   description: A benchmark by medical experts for LLMs grounded in real-world healthcare needs
   id: medhelm
+  benchmark_output_storage: nlp
   releases:
     - v1.0.0
 
