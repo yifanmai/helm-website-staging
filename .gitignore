@@ -173,5 +173,6 @@ cython_debug/
 # PyPI configuration file
 .pypirc
 
-# Build output
+# Build input and output
+static_build/
 project_metadata.json

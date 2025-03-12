@@ -1,18 +1,17 @@
-import shutil
+from typing import Dict, List, Mapping
+import argparse
 import json
 import os
-from typing import Dict, List, Mapping
+import shutil
 import yaml
 
 
 # CLASSIC_PATH = "helm-classic/src/helm/benchmark/static"
-DIST_PATH = "dist/"
 LEGACY_PATH = "legacy/"
 INDEX_FILE_NAME = "index.html"
 CONFIG_FILE_NAME = "config.js"
 PROJECT_METADATA_FILE_NAME = "project_metadata.json"
-CONFIG_TEMPLATE = """
-window.{release_constant_name} = "{release}";
+CONFIG_TEMPLATE = """window.{release_constant_name} = "{release}";
 window.BENCHMARK_OUTPUT_BASE_URL = "{benchmark_output_base_url}";
 window.PROJECT_ID = "{project_id}";
 """
@@ -71,7 +70,7 @@ def get_latest_release(project: Dict) -> str:
 
 
 def build_project(
-    vite_build_path: str,
+    static_build_path: str,
     project_id: str,
     project_path: str,
     benchmark_output_base_url: str,
@@ -79,6 +78,11 @@ def build_project(
     buildable_releases: List[str],
     suites_only: bool,
 ):
+    # For each route /helm/:project/:release/ (e.g. /helm/lite/v1.0.0/)
+    # copy two files, index.html and config.js, to that route so that the single-page app
+    # can be served at that route.
+    # This works around not having a true backend server that can perform routing.
+    # Also do this for the "latest" alias route /helm/:project/latest/
     os.makedirs(project_path, exist_ok=True)
     redirect_file_path = os.path.join(project_path, INDEX_FILE_NAME)
     with open(redirect_file_path, "w") as f:
@@ -88,7 +92,7 @@ def build_project(
         release_path = os.path.join(project_path, release)
         os.makedirs(release_path, exist_ok=True)
 
-        source_index_path = os.path.join(vite_build_path, INDEX_FILE_NAME)
+        source_index_path = os.path.join(static_build_path, INDEX_FILE_NAME)
         release_index_path = os.path.join(release_path, INDEX_FILE_NAME)
         shutil.copyfile(source_index_path, release_index_path)
 
@@ -126,25 +130,25 @@ def build_project_metadata(projects: Mapping) -> None:
     return project_metadata
 
 
-def main():
+def build(output_path: str, static_build_path: str):
+
+    shutil.copytree(static_build_path, output_path, dirs_exist_ok=True)
+
+    # Read project config
     with open("src/projects_config.yaml") as f:
         projects = yaml.safe_load(f)
 
-    # For each route /helm/:project/:release/ (e.g. /helm/lite/v1.0.0/)
-    # copy two files, index.html and config.js, to that route so that the single-page app
-    # can be served at that route.
-    # This works around not having a true backend server that can perform routing.
-    # Also do this for the "latest" alias route /helm/:project/latest/
+    # For each project, build routes /helm/:project/:release/ and /helm/:project/
     for project in projects:
         project_id = project["id"]
         benchmark_output_base_url = get_benchmark_output_base_url(
             project.get("benchmark_output_storage", "gcs"), project_id
         )
-        project_path = os.path.join(DIST_PATH, project_id)
+        project_path = os.path.join(output_path, project_id)
         latest_release = get_latest_release(project)
         buildable_releases = get_buildable_releases(project)
         build_project(
-            vite_build_path=DIST_PATH,
+            static_build_path=static_build_path,
             project_id=project_id,
             project_path=project_path,
             benchmark_output_base_url=benchmark_output_base_url,
@@ -154,10 +158,10 @@ def main():
         )
 
     # Include legacy files
-    shutil.copytree(LEGACY_PATH, DIST_PATH, dirs_exist_ok=True)
+    shutil.copytree(LEGACY_PATH, output_path, dirs_exist_ok=True)
 
     # Write the config.js file at the root
-    source_config_path = os.path.join(DIST_PATH, CONFIG_FILE_NAME)
+    source_config_path = os.path.join(output_path, CONFIG_FILE_NAME)
     source_config_contents = CONFIG_TEMPLATE.format(
         release_constant_name="RELEASE",
         release="v1.0.0",
@@ -168,9 +172,21 @@ def main():
         f.write(source_config_contents)
 
     # Write the project_metadata.json file at the root
-    project_metadata_path = os.path.join(DIST_PATH, PROJECT_METADATA_FILE_NAME)
+    project_metadata_path = os.path.join(output_path, PROJECT_METADATA_FILE_NAME)
     with open(project_metadata_path, "w") as f:
         json.dump(build_project_metadata(projects), f, indent="\t")
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "-o", "--output-path", type=str, help="Path to the build output folder that will be uploaded to GitHub Pages", default="dist"
+    )
+    parser.add_argument(
+        "-s", "--static-build-path", type=str, help="Path to the input static_build folder containing the Vite build", default="static_build"
+    )
+    args = parser.parse_args()
+    build(output_path=args.output_path, static_build_path=args.static_build_path,)
 
 
 if __name__ == "__main__":
