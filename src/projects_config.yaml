@@ -148,6 +148,21 @@
   releases:
     - v1.0.0
 
+
+- title: MedHELM
+  description: Ewok
+  id: ewok
+  preview_releases:
+    - v1.0.0
+
+- title: ToRR
+  description: Ewok
+  id: ewok
+  preview_releases:
+    - v1.0.0
+
+
+
 # Pre-releases
 
 - title: SEA-HELM
@@ -180,5 +195,23 @@
 - title: Call Center
   description: Call Center
   id: call-center
+  preview_releases:
+    - v1.0.0
+
+- title: Capabilities
+  description: Capabilities
+  id: capabilities
+  preview_releases:
+    - v1.0.0
+
+- title: Ewok
+  description: Ewok
+  id: ewok
+  preview_releases:
+    - v1.0.0
+
+- title: Speech
+  description: Speech
+  id: speech
   preview_releases:
     - v1.0.0
