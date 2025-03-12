@@ -123,7 +123,7 @@ def main():
         latest_release = get_latest_release(project)
         buildable_releases = get_all_buildable_releases(project)
         build_project(
-            vite_biuld_path=DIST_PATH,
+            vite_build_path=DIST_PATH,
             project_id=project_id,
             project_path=project_path,
             benchmark_output_base_url=benchmark_output_base_url,
