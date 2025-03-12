@@ -41,7 +41,6 @@
     - v1.1.0
     - v1.0.0
 
-# broken
 - title: Instruct
   description: Evaluations of instruction following models with absolute ratings
   id: instruct
@@ -168,7 +167,7 @@
   id: sql
   benchmark_output_storage: nlp
   preview_releases:
-    - v0.1.0
+    - v0.5.0
 
 - title: Long Context
   description: Long context
@@ -207,5 +206,6 @@
 - title: Speech
   description: Speech
   id: speech
+  suites_only: true
   preview_releases:
     - v1.0.0
